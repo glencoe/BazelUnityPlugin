@@ -1,3 +1,3 @@
 workspace(
-	name = "UnityTestRunnerGeneration"
+	name = "UnityPlugin"
 		)
