@@ -54,7 +54,7 @@ Additional dependencies can be specified using the deps parameter.
 The source files for the test are only the *_Test.c that the user writes
 and the corresponding generated *_Test_Runner.c file.
 """
-def unity_test(file_name, deps=[], copts=None, size="small", linkopts=None, visibility=None, additional_srcs=[]):
+def unity_test(file_name, deps=[], copts=[], size="small", linkopts=[], visibility=None, additional_srcs=[]):
     generate_test_runner(file_name, visibility)
     native.cc_test(
         name = strip_extension(file_name),
@@ -144,7 +144,7 @@ generate_mock_srcs = rule(
 
 )
 
-def mock(name, file, deps=[], visibility=None):
+def mock(name, file, deps=[], visibility=None, copts=[]):
   native.cc_library(
       name =  name + "OriginalHdrLib",
       hdrs = [file],
@@ -159,6 +159,7 @@ def mock(name, file, deps=[], visibility=None):
       srcs = [name+"Srcs"],
       hdrs = [name+"Srcs"],
       strip_include_prefix = "mocks",
+	  copts = copts,
       deps = [
           "@Unity//:Unity",
           "@CMock//:CMock",
