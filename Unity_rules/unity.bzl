@@ -46,6 +46,11 @@ def generate_test_runner(file_name, visibility=None):
     )
 
 """
+This variable holds all the mocks that have been created
+"""
+created_mocks = set()
+
+"""
 This macro creates a cc_test rule and a genrule (that creates
 the test runner) for a given file.
 It adds unity as dependency so the user doesn't have to do it himself.
@@ -59,7 +64,7 @@ def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[]
     for target in mocks:
         mock_name = "Mock" + strip_extension(target.split("/")[-1])
         if (mock_name not in created_mocks)
-            created_mocks = created_mocks | {mock_name}
+            created_mocks.add(mock_name)
             mock(
                 name = mock_name,                                                                                                                                                         
                 file = target,
@@ -76,11 +81,6 @@ def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[]
         linkopts = linkopts,
         copts = copts,
     )
-
-"""
-This variable holds all the mocks that have been created
-"""
-created_mocks = set()
 
 """
 Convenience macro that generates a unity test for every file in a given list
