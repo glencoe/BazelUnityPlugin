@@ -63,7 +63,7 @@ def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[]
     mock_deps = deps    # store for each mock because deps will be manipulated
     for target in mocks:
         mock_name = "Mock" + strip_extension(target.split("/")[-1])
-        if (created_mocks.get(mock_name, False) == False):
+        if (created_mocks.get(mock_name) == None):
             created_mocks.update(mock_name=True)
             mock(
                 name = mock_name,                                                                                                                                                         
