@@ -58,11 +58,13 @@ def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[]
     mock_deps = deps    # store for each mock because deps will be manipulated
     for target in mocks:
         mock_name = "Mock" + strip_extension(target.split("/")[-1])
-        mock(
-            name = mock_name,
-            file = target,
-            deps = mock_deps,
-        )
+        if (mock_name not in created_mocks)
+            created_mocks = created_mocks | {mock_name}
+            mock(
+                name = mock_name,                                                                                                                                                         
+                file = target,
+                deps = mock_deps,
+            )
         deps = deps + [mock_name]   # add created mock to testing dependencies
     generate_test_runner(file_name, visibility)
     native.cc_test(
@@ -74,6 +76,11 @@ def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[]
         linkopts = linkopts,
         copts = copts,
     )
+
+"""
+This variable holds all the mocks that have been created
+"""
+created_mocks = set()
 
 """
 Convenience macro that generates a unity test for every file in a given list
