@@ -48,7 +48,7 @@ def generate_test_runner(file_name, visibility=None):
 """
 This variable holds all the mocks that have been created
 """
-created_mocks = list()
+created_mocks = []
 
 """
 This macro creates a cc_test rule and a genrule (that creates
