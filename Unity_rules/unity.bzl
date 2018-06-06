@@ -48,7 +48,7 @@ def generate_test_runner(file_name, visibility=None):
 """
 This variable holds all the mocks that have been created
 """
-created_mocks = set()
+created_mocks = list()
 
 """
 This macro creates a cc_test rule and a genrule (that creates
@@ -63,8 +63,8 @@ def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[]
     mock_deps = deps    # store for each mock because deps will be manipulated
     for target in mocks:
         mock_name = "Mock" + strip_extension(target.split("/")[-1])
-        if (mock_name not in created_mocks)
-            created_mocks.add(mock_name)
+        if (created_mocks.count(mock_name) == 0):
+            created_mocks.append(mock_name)
             mock(
                 name = mock_name,                                                                                                                                                         
                 file = target,
