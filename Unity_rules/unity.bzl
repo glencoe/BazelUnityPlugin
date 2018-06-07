@@ -46,11 +46,6 @@ def generate_test_runner(file_name, visibility=None):
     )
 
 """
-This variable holds all the mocks that have been created
-"""
-created_mocks = {}
-
-"""
 This macro creates a cc_test rule and a genrule (that creates
 the test runner) for a given file.
 It adds unity as dependency so the user doesn't have to do it himself.
@@ -62,14 +57,12 @@ and the corresponding generated *_Test_Runner.c file.
 def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[], visibility=None, additional_srcs=[]):
     mock_deps = deps    # store for each mock because deps will be manipulated
     for target in mocks:
-        mock_name = "Mock" + strip_extension(target.split("/")[-1])
-        if (created_mocks.get(mock_name) == None):
-            created_mocks.update({mock_name : True})
-            mock(
-                name = mock_name,                                                                                                                                                         
-                file = target,
-                deps = mock_deps,
-            )
+        mock_name = "Mock" + strip_extension(target.split("/")[-1]) + strip_extension(file_name)
+        mock(
+            name = mock_name,                                                                                                                            
+            file = target,   
+            deps = mock_deps,
+        )
         deps = deps + [mock_name]   # add created mock to testing dependencies
     generate_test_runner(file_name, visibility)
     native.cc_test(
