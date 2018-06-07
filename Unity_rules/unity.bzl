@@ -55,14 +55,8 @@ The source files for the test are only the *_Test.c that the user writes
 and the corresponding generated *_Test_Runner.c file.
 """
 def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[], visibility=None, additional_srcs=[]):
-    mock_deps = deps    # store for each mock because deps will be manipulated
     for target in mocks:
-        mock_name = "Mock" + strip_extension(target.split("/")[-1]) + strip_extension(file_name)
-        mock(
-            name = mock_name,                                                                                                                            
-            file = target,   
-            deps = mock_deps,
-        )
+        mock_name = "Mock" + strip_extension(target.split("/")[-1])
         deps = deps + [mock_name]   # add created mock to testing dependencies
     generate_test_runner(file_name, visibility)
     native.cc_test(
@@ -75,11 +69,20 @@ def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[]
         copts = copts,
     )
 
+def generate_mocks_for_every_header(file_list=[], deps=[]):
+    for target in file_list:
+        mock_name = "Mock" + strip_extension(target.split("/")[-1])
+        mock(
+            name = mock_name,
+            file = target,
+            deps = deps,
+        )
+
 """
 Convenience macro that generates a unity test for every file in a given list
 using the same parameters.
 """
-def generate_a_unity_test_for_every_file(file_list, deps=None, mocks=[], copts=None, linkopts=None, size="small", visibility=None):
+def generate_a_unity_test_for_every_file(file_list, deps=[], mocks=[], copts=None, linkopts=None, size="small", visibility=None):
     for file in file_list:
         unity_test(
             file_name = file,
