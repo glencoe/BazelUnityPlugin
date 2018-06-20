@@ -16,6 +16,10 @@ def runner_base_name(file_name):
 def runner_file_name(file_name):
     return runner_base_name(file_name) + ".c"
 
+def mock_module_name(file_name):
+	output = file_name.replace("/", "").replace(":", "")
+	return "Mock" + strip_extension(output)
+
 """
 Use the helper scripts shipped with unity to
 generate a test runner for the specified file.
@@ -71,7 +75,7 @@ def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[]
 
 def generate_mocks_for_every_header(file_list=[], deps=[]):
     for target in file_list:
-        mock_name = "Mock" + strip_extension(target.split("/")[-1])
+        mock_name = mock_module_name(target)
         mock(
             name = mock_name,
             file = target,
