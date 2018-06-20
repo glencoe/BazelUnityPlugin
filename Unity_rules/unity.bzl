@@ -60,7 +60,7 @@ and the corresponding generated *_Test_Runner.c file.
 """
 def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[], visibility=None, additional_srcs=[]):
     for target in mocks:
-        mock_name = "Mock" + strip_extension(target.split("/")[-1])
+        mock_name = mock_module_name(target)
         deps = deps + [mock_name]   # add created mock to testing dependencies
     generate_test_runner(file_name, visibility)
     native.cc_test(
