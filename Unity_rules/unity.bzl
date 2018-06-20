@@ -73,13 +73,15 @@ def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[]
         copts = copts,
     )
 
-def generate_mocks_for_every_header(file_list=[], deps=[]):
+def generate_mocks_for_every_header(file_list=[], deps=[], visibility=None, copts=[]):
     for target in file_list:
         mock_name = mock_module_name(target)
         mock(
             name = mock_name,
             file = target,
             deps = deps,
+            visibility = visibility,
+            copts = copts
         )
 
 """
