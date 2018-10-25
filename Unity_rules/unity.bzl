@@ -18,7 +18,9 @@ def runner_file_name(file_name):
 
 def mock_module_name(file_name):
     package_name = file_name.split(":")[0]
-    label_name = file_name.split(":")[1]
+    label_name = file_name.split(":")[-1]
+    if package_name == label_name:
+	package_name = ""
     return package_name + ":Mock" + strip_extension(label_name)
 
 """
