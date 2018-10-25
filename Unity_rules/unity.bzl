@@ -165,26 +165,27 @@ generate_mock_srcs = rule(
 )
 
 def mock(name, file, deps=[], visibility=None, copts=[]):
+  target_name = name.split(":")[-1]
   native.cc_library(
-      name =  name + "OriginalHdrLib",
+      name =  target_name + "OriginalHdrLib",
       hdrs = [file],
       linkstatic = 1,
   )
   generate_mock_srcs(
-      name = name + "Srcs",
+      name = target_name + "Srcs",
       srcs = [file],
   )
   native.cc_library(
-      name = name,
-      srcs = [name+"Srcs"],
-      hdrs = [name+"Srcs"],
+      name = target_name,
+      srcs = [target_name+"Srcs"],
+      hdrs = [target_name+"Srcs"],
       strip_include_prefix = "mocks",
 	  copts = copts,
       deps = [
           "@Unity//:Unity",
           "@CMock//:CMock",
           "@CException//:CException",
-          name + "OriginalHdrLib",
+          target_name.split(":")[-1] + "OriginalHdrLib",
       ] + deps,
       visibility = visibility,
   )
