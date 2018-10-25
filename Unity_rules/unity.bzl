@@ -17,8 +17,7 @@ def runner_file_name(file_name):
     return runner_base_name(file_name) + ".c"
 
 def mock_module_name(file_name):
-    output = file_name.replace("/", "").replace(":", "")
-    return "Mock" + strip_extension(output)
+    return file_name.strip("/")[0:-1].join("/").strip(":")[0:-1].join(":") + Mock" + file_name.strip("/")[-1].strip(":")[-1]
 
 """
 Use the helper scripts shipped with unity to
