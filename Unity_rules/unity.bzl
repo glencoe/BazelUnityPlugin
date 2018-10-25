@@ -17,8 +17,8 @@ def runner_file_name(file_name):
     return runner_base_name(file_name) + ".c"
 
 def mock_module_name(file_name):
-    package_name = file_name.strip(":")[0]
-    label_name = file_name.strip(":")[1]
+    package_name = file_name.split(":")[0]
+    label_name = file_name.split(":")[1]
     return package_name + ":Mock" + strip_extension(label_name)
 
 """
