@@ -43,7 +43,7 @@ def generate_test_runner(file_name, visibility=None):
         name = runner_base_name(file_name),
         srcs = [file_name],
         outs = [runner_file_name(file_name)],
-        cmd = "ruby $(location @Unity//:TestRunnerGenerator) $(SRCS) $(OUTS)",
+        cmd = "ruby $(location @Unity//:TestRunnerGenerator) -cexception --enforce_strict_ordering=1 $(SRCS) $(OUTS)",
         tools = ["@Unity//:TestRunnerGenerator",
                  "@Unity//:HelperScripts"],
         visibility = visibility,
@@ -130,7 +130,7 @@ def _generate_mock_srcs_impl(ctx):
                original_hdr_path]
 
   if ctx.attr.enforce_strict_ordering:
-    arguments.append("--config=enforce_strict_ordering");
+    arguments.append("--enforce_strict_ordering=1");
 
   ctx.actions.run(
       outputs = [mock_src, mock_hdr],
