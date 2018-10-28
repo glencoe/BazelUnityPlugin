@@ -71,9 +71,10 @@ def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[]
         size = size,
         linkopts = linkopts,
         copts = copts,
+        linkstatic = 1,
     )
 
-def generate_mocks_for_every_header(file_list=[], deps=[], visibility=None, copts=[]):
+def generate_mocks_for_every_header(file_list=[], deps=[], visibility=None, copts=[], enforce_strict_ordering=False):
     for target in file_list:
         mock_name = mock_module_name(target)
         mock(
@@ -81,7 +82,8 @@ def generate_mocks_for_every_header(file_list=[], deps=[], visibility=None, copt
             file = target,
             deps = deps,
             visibility = visibility,
-            copts = copts
+            copts = copts,
+            enforce_strict_ordering = enforce_strict_ordering,
         )
 
 """
@@ -127,6 +129,9 @@ def _generate_mock_srcs_impl(ctx):
                plugins_argument,
                original_hdr_path]
 
+  if ctx.attr.enforce_strict_ordering:
+    arguments.append("--config=enforce_strict_ordering");
+
   ctx.actions.run(
       outputs = [mock_src, mock_hdr],
       inputs = [input]+ unity_helpers.files.to_list() + mock_helpers,
@@ -153,6 +158,7 @@ generate_mock_srcs = rule(
     implementation=_generate_mock_srcs_impl,
     attrs = {"srcs": attr.label_list(mandatory=True, allow_files=[".h"]),
              "deps": attr.label(default=None),
+             "enforce_strict_ordering": attr.bool(default=False),
              "plugins": attr.string_list(default=["ignore", "ignore_arg", "expect_any_args", "cexception", "callback", "return_thru_ptr", "array"]),
              "_unity": attr.label(default="@Unity//:HelperScripts"),
              "_cmock_generator": attr.label(default="@CMock//:MockGenerator", allow_single_file=[".rb"]),
@@ -163,7 +169,7 @@ generate_mock_srcs = rule(
 
 )
 
-def mock(name, file, deps=[], visibility=None, copts=[]):
+def mock(name, file, deps=[], visibility=None, copts=[], plugins=[], enforce_strict_ordering=False):
   native.cc_library(
       name =  name + "OriginalHdrLib",
       hdrs = [file],
@@ -172,6 +178,7 @@ def mock(name, file, deps=[], visibility=None, copts=[]):
   generate_mock_srcs(
       name = name + "Srcs",
       srcs = [file],
+      enforce_strict_ordering = enforce_strict_ordering,
   )
   native.cc_library(
       name = name,
