@@ -40,14 +40,14 @@ https://docs.bazel.build/versions/master/be/general.html#genrule
 """
 def generate_test_runner(file_name, visibility=None):
     if cexception:
-      cmd = "ruby $(location @Unity//:TestRunnerGenerator) -cexception --enforce_strict_ordering=1 $(SRCS) $(OUTS)",
+      cmd = "ruby $(location @Unity//:TestRunnerGenerator) -cexception --enforce_strict_ordering=1 $(SRCS) $(OUTS)"
     else:
-      cmd = "ruby $(location @Unity//:TestRunnerGenerator) --enforce_strict_ordering=1 $(SRCS) $(OUTS)",
+      cmd = "ruby $(location @Unity//:TestRunnerGenerator) --enforce_strict_ordering=1 $(SRCS) $(OUTS)"
     native.genrule(
         name = runner_base_name(file_name),
         srcs = [file_name],
         outs = [runner_file_name(file_name)],
-        cmd = cmd
+        cmd = cmd,
         tools = ["@Unity//:TestRunnerGenerator",
                  "@Unity//:HelperScripts"],
         visibility = visibility,
