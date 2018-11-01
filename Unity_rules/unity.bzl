@@ -38,7 +38,7 @@ before handing it over to bash.
 More Info:
 https://docs.bazel.build/versions/master/be/general.html#genrule
 """
-def generate_test_runner(file_name, visibility=None, cexception=true):
+def generate_test_runner(file_name, visibility=None, cexception=True):
     if cexception:
       cmd = "ruby $(location @Unity//:TestRunnerGenerator) -cexception --enforce_strict_ordering=1 $(SRCS) $(OUTS)"
     else:
@@ -62,7 +62,7 @@ Additional dependencies can be specified using the deps parameter.
 The source files for the test are only the *_Test.c that the user writes
 and the corresponding generated *_Test_Runner.c file.
 """
-def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", cexception=true, linkopts=[], visibility=None, additional_srcs=[]):
+def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", cexception=True, linkopts=[], visibility=None, additional_srcs=[]):
     for target in mocks:
         mock_name = mock_module_name(target)
         deps = deps + [mock_name]   # add created mock to testing dependencies
@@ -95,7 +95,7 @@ def generate_mocks_for_every_header(file_list=[], deps=[], visibility=None, copt
 Convenience macro that generates a unity test for every file in a given list
 using the same parameters.
 """
-def generate_a_unity_test_for_every_file(file_list, deps=[], mocks=[], copts=None, linkopts=None, size="small", visibility=None, cexception=true):
+def generate_a_unity_test_for_every_file(file_list, deps=[], mocks=[], copts=None, linkopts=None, size="small", visibility=None, cexception=True):
     for file in file_list:
         unity_test(
             file_name = file,
