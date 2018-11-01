@@ -38,7 +38,7 @@ before handing it over to bash.
 More Info:
 https://docs.bazel.build/versions/master/be/general.html#genrule
 """
-def generate_test_runner(file_name, visibility=None):
+def generate_test_runner(file_name, visibility=None, cexception=true):
     if cexception:
       cmd = "ruby $(location @Unity//:TestRunnerGenerator) -cexception --enforce_strict_ordering=1 $(SRCS) $(OUTS)"
     else:
