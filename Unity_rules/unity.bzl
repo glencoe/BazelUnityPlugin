@@ -39,11 +39,15 @@ More Info:
 https://docs.bazel.build/versions/master/be/general.html#genrule
 """
 def generate_test_runner(file_name, visibility=None):
+    if cexception:
+      cmd = "ruby $(location @Unity//:TestRunnerGenerator) -cexception --enforce_strict_ordering=1 $(SRCS) $(OUTS)",
+    else:
+      cmd = "ruby $(location @Unity//:TestRunnerGenerator) --enforce_strict_ordering=1 $(SRCS) $(OUTS)",
     native.genrule(
         name = runner_base_name(file_name),
         srcs = [file_name],
         outs = [runner_file_name(file_name)],
-        cmd = "ruby $(location @Unity//:TestRunnerGenerator) -cexception --enforce_strict_ordering=1 $(SRCS) $(OUTS)",
+        cmd = cmd
         tools = ["@Unity//:TestRunnerGenerator",
                  "@Unity//:HelperScripts"],
         visibility = visibility,
@@ -58,11 +62,12 @@ Additional dependencies can be specified using the deps parameter.
 The source files for the test are only the *_Test.c that the user writes
 and the corresponding generated *_Test_Runner.c file.
 """
-def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", linkopts=[], visibility=None, additional_srcs=[]):
+def unity_test(file_name, deps=[], mocks=[], copts=[], size="small", cexception=true, linkopts=[], visibility=None, additional_srcs=[]):
     for target in mocks:
         mock_name = mock_module_name(target)
         deps = deps + [mock_name]   # add created mock to testing dependencies
-    generate_test_runner(file_name, visibility)
+    generate_test_runner(file_name, visibility,
+                         cexception=cexception)
     native.cc_test(
         name = strip_extension(file_name),
         srcs = [file_name, runner_file_name(file_name)] + additional_srcs,
