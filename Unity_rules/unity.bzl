@@ -95,7 +95,7 @@ def generate_mocks_for_every_header(file_list=[], deps=[], visibility=None, copt
 Convenience macro that generates a unity test for every file in a given list
 using the same parameters.
 """
-def generate_a_unity_test_for_every_file(file_list, deps=[], mocks=[], copts=None, linkopts=None, size="small", visibility=None):
+def generate_a_unity_test_for_every_file(file_list, deps=[], mocks=[], copts=None, linkopts=None, size="small", visibility=None, cexception=true):
     for file in file_list:
         unity_test(
             file_name = file,
@@ -105,6 +105,7 @@ def generate_a_unity_test_for_every_file(file_list, deps=[], mocks=[], copts=Non
             copts = copts,
             size = size,
             linkopts = linkopts,
+            cexception = cexception,
         )
 
 def _replace_extension_with(file_path, replacement):
