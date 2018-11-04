@@ -56,7 +56,7 @@ def generate_test_runner(file_name, visibility=None, cexception=True):
         visibility = visibility,
     )
 
-def new_mock(name, srcs, dir, basename=name, deps=[], plugins=["expect_any_args"]):
+def new_mock(name, srcs, dir, basename=name, deps=[], plugins=["expect_any_args"], visibility=None):
     mock_srcs = name + "Srcs"
     native.genrule(
         name = mock_srcs,
@@ -79,7 +79,8 @@ def new_mock(name, srcs, dir, basename=name, deps=[], plugins=["expect_any_args"
             "@CException//:CException",
             "@CMock//:CMock",
         ] + deps,
-    strip_include_prefix = "mocks/",
+        strip_include_prefix = "mocks/",
+        visibility = visibility,
     )
 
 """
