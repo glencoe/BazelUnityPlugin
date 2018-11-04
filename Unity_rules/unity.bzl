@@ -56,13 +56,70 @@ def generate_test_runner(file_name, visibility=None, cexception=True):
         visibility = visibility,
     )
 
-def new_mock(name, srcs, dir, basename=name, deps=[], plugins=["expect_any_args"], visibility=None):
+def __extract_sub_dir_from_header_path(single_header_path):
+  sub_dir = single_header_path
+  if sub_dir.count("//") > 0:
+    sub_dir = sub_dir.partition("//")[2]
+    sub_dir = sub_dir.replace(":", "/").rsplit("/", maxsplit=1)[0]
+  if sub_dir.startswith("/"):
+    sub_dir = sub_dir[1:]
+  if not sub_dir.endswith("/"):
+    sub_dir = sub_dir + "/"
+  return sub_dir
+
+def __build_cmock_argument_string(enforce_strict_ordering, strippables, treat_as_void, verbosity, when_ptr, fail_on_unexpected_calls):
+  other_arguments = ""
+  if enforce_strict_ordering:
+    other_arguments += " --enforce_strict_ordering=1"
+  if strippables != []:
+    other_arguments += " --strippables=" + ";".join(strippables) + ";"
+  if treat_as_void != []:
+    other_arguments += " --treat_as_void=" + ";".join(treat_as_void) + ";"
+    other_arguments += " --verbosity={}".format(verbosity)
+    other_arguments += " --when_ptr=" + when_ptr
+  if not fail_on_unexpected_calls:
+    other_arguments += " --fail_on_unexpected_calls=0"
+  return other_arguments
+
+def __build_plugins_argument(plugins):
+  plugin_argument = ""
+  if len(plugins) > 0:
+    plugin_argument = ";".join(plugins) + ";'"
+    plugin_argument = " --plugins='" + plugin_argument
+  return plugin_argument
+
+def __get_hdr_base_name(path):
+  return "Mock" + path.split("/")[-1].split(":")[-1][:-2]
+
+
+def new_mock(name, srcs, dir, basename=None, deps=[],
+             plugins=["ignore", "ignore_arg", "expect_any_args", "cexception", "callback", "return_thru_ptr", "array"],
+             visibility=None, enforce_strict_ordering=False,
+             strippables=[],
+             treat_as_void=[],
+             verbosity=2,
+             when_ptr="smart",
+             fail_on_unexpected_calls=True):
     mock_srcs = name + "Srcs"
+    sub_dir = __extract_sub_dir_from_header_path(srcs[0])
+    other_arguments = __build_cmock_argument_string(enforce_strict_ordering,
+                                                    strippables,
+                                                    treat_as_void,
+                                                    verbosity,
+                                                    when_ptr,
+                                                    fail_on_unexpected_calls)
+    if basename == None:
+      basename = __get_hdr_base_name(srcs[0])
+    plugin_argument = __build_plugins_argument(plugins)
+    if plugin_argument.find("cexception") >= 0:
+      deps.append("@CException")
+    cmd = "UNITY_DIR=external/Unity/ ruby $(location @CMock//:MockGenerator) --mock_path=$(@D)/mocks/ --subdir=" \
+    + sub_dir + plugin_argument + other_arguments + " $(SRCS)"
     native.genrule(
         name = mock_srcs,
         srcs = srcs,
-        outs = ["mocks/"+dir+basename+".c", "mocks/"+dir+basename+".h",],
-        cmd = "UNITY_DIR=external/Unity/ ruby $(location @CMock//:MockGenerator) --mock_path=$(@D)/mocks/ --subdir=" +dir + " --plugins='expect_any_args;' $(SRCS)",
+        outs = ["mocks/"+sub_dir+basename+".c", "mocks/"+sub_dir+basename+".h",],
+        cmd = cmd,
         tools = [
             "@Unity//:HelperScripts",
             "@CMock//:HelperScripts",
@@ -76,7 +133,6 @@ def new_mock(name, srcs, dir, basename=name, deps=[], plugins=["expect_any_args"
         hdrs = [mock_srcs],
         deps = [
             "@Unity//:Unity",
-            "@CException//:CException",
             "@CMock//:CMock",
         ] + deps,
         strip_include_prefix = "mocks/",
