@@ -60,7 +60,7 @@ def __extract_sub_dir_from_header_path(single_header_path):
   sub_dir = single_header_path
   if sub_dir.count("//") > 0:
     sub_dir = sub_dir.partition("//")[2]
-    sub_dir = sub_dir.replace(":", "/").rsplit("/", maxsplit=1)[0]
+  sub_dir = sub_dir.replace(":", "/").rsplit("/", maxsplit=1)[0]
   if sub_dir.startswith("/"):
     sub_dir = sub_dir[1:]
   if not sub_dir.endswith("/"):
@@ -92,7 +92,7 @@ def __get_hdr_base_name(path):
   return "Mock" + path.split("/")[-1].split(":")[-1][:-2]
 
 
-def new_mock(name, srcs, dir, basename=None, deps=[],
+def new_mock(name, srcs, basename=None, deps=[],
              plugins=["ignore", "ignore_arg", "expect_any_args", "cexception", "callback", "return_thru_ptr", "array"],
              visibility=None, enforce_strict_ordering=False,
              strippables=[],
@@ -102,6 +102,7 @@ def new_mock(name, srcs, dir, basename=None, deps=[],
              fail_on_unexpected_calls=True):
     mock_srcs = name + "Srcs"
     sub_dir = __extract_sub_dir_from_header_path(srcs[0])
+    print(sub_dir)
     other_arguments = __build_cmock_argument_string(enforce_strict_ordering,
                                                     strippables,
                                                     treat_as_void,
@@ -110,6 +111,7 @@ def new_mock(name, srcs, dir, basename=None, deps=[],
                                                     fail_on_unexpected_calls)
     if basename == None:
       basename = __get_hdr_base_name(srcs[0])
+    print(basename)
     plugin_argument = __build_plugins_argument(plugins)
     if plugin_argument.find("cexception") >= 0:
       deps.append("@CException")
