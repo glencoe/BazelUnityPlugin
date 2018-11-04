@@ -17,8 +17,11 @@ def runner_file_name(file_name):
     return runner_base_name(file_name) + ".c"
 
 def mock_module_name(file_name):
-    output = file_name.replace("/", "").replace(":", "")
-    return "Mock" + strip_extension(output)
+    package_name = file_name.split(":")[0]
+    label_name = file_name.split(":")[-1]
+    if package_name == label_name:
+      package_name = ""
+    return package_name + ":Mock" + strip_extension(label_name)
 
 """
 Use the helper scripts shipped with unity to
@@ -176,27 +179,28 @@ generate_mock_srcs = rule(
 )
 
 def mock(name, file, deps=[], visibility=None, copts=[], plugins=[], enforce_strict_ordering=False):
+  target_name = name.split(":")[-1]
   native.cc_library(
-      name =  name + "OriginalHdrLib",
+      name =  target_name + "OriginalHdrLib",
       hdrs = [file],
       linkstatic = 1,
   )
   generate_mock_srcs(
-      name = name + "Srcs",
+      name = target_name + "Srcs",
       srcs = [file],
       enforce_strict_ordering = enforce_strict_ordering,
   )
   native.cc_library(
-      name = name,
-      srcs = [name+"Srcs"],
-      hdrs = [name+"Srcs"],
+      name = target_name,
+      srcs = [target_name+"Srcs"],
+      hdrs = [target_name+"Srcs"],
       strip_include_prefix = "mocks",
 	  copts = copts,
       deps = [
           "@Unity//:Unity",
           "@CMock//:CMock",
           "@CException//:CException",
-          name + "OriginalHdrLib",
+          target_name.split(":")[-1] + "OriginalHdrLib",
       ] + deps,
       visibility = visibility,
   )
