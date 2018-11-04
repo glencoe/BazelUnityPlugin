@@ -56,6 +56,32 @@ def generate_test_runner(file_name, visibility=None, cexception=True):
         visibility = visibility,
     )
 
+def new_mock(name, srcs, dir, basename, deps=[]):
+    mock_srcs = name + "Srcs"
+    native.genrule(
+        name = mock_srcs,
+        srcs = srcs,
+        outs = ["mocks/"+dir+basename+".c", "mocks/"+dir+basename+".h",],
+        cmd = "UNITY_DIR=external/Unity/ ruby $(location @CMock//:MockGenerator) --mock_path=$(@D)/mocks/ --subdir=" +dir + " --plugins='expect_any_args;' $(SRCS)",
+        tools = [
+            "@Unity//:HelperScripts",
+            "@CMock//:HelperScripts",
+            "@CMock//:MockGenerator",
+        ]
+
+    )
+    native.cc_library(
+        name = name,
+        srcs = [mock_srcs],
+        hdrs = [mock_srcs],
+        deps = [
+            "@Unity//:Unity",
+            "@CException//:CException",
+            "@CMock//:CMock",
+        ] + deps,
+
+    )
+
 """
 This macro creates a cc_test rule and a genrule (that creates
 the test runner) for a given file.
