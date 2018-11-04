@@ -102,7 +102,6 @@ def new_mock(name, srcs, basename=None, deps=[],
              fail_on_unexpected_calls=True):
     mock_srcs = name + "Srcs"
     sub_dir = __extract_sub_dir_from_header_path(srcs[0])
-    print(sub_dir)
     other_arguments = __build_cmock_argument_string(enforce_strict_ordering,
                                                     strippables,
                                                     treat_as_void,
@@ -111,7 +110,6 @@ def new_mock(name, srcs, basename=None, deps=[],
                                                     fail_on_unexpected_calls)
     if basename == None:
       basename = __get_hdr_base_name(srcs[0])
-    print(basename)
     plugin_argument = __build_plugins_argument(plugins)
     if plugin_argument.find("cexception") >= 0:
       deps.append("@CException")
@@ -127,7 +125,6 @@ def new_mock(name, srcs, basename=None, deps=[],
             "@CMock//:HelperScripts",
             "@CMock//:MockGenerator",
         ]
-
     )
     native.cc_library(
         name = name,
