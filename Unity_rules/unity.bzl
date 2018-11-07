@@ -21,7 +21,9 @@ def mock_module_name(file_name):
     label_name = file_name.split(":")[-1]
     if package_name == label_name:
       package_name = ""
-    return package_name + ":Mock" + strip_extension(label_name)
+    name = package_name + ":Mock" + strip_extension(label_name)
+    print(name)
+    return name
 
 """
 Use the helper scripts shipped with unity to
