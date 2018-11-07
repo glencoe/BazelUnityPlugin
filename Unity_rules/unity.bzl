@@ -22,7 +22,6 @@ def mock_module_name(file_name):
     if package_name == label_name:
       package_name = ""
     name = package_name + ":Mock" + strip_extension(label_name)
-    print(name)
     return name
 
 """
@@ -263,6 +262,7 @@ generate_mock_srcs = rule(
 )
 
 def mock(name, file, deps=[], visibility=None, copts=[], plugins=[], enforce_strict_ordering=False):
+  print(name)
   target_name = name.split(":")[-1]
   native.cc_library(
       name =  target_name + "OriginalHdrLib",
