@@ -17,9 +17,12 @@ def runner_file_name(file_name):
     return runner_base_name(file_name) + ".c"
 
 def mock_module_name(file_name):
-    output = file_name.replace("/", "").replace(":", "")
-    return "Mock" + strip_extension(output)
-
+    package_name = file_name.split(":")[0]
+    label_name = file_name.split(":")[-1]
+    if package_name == label_name:
+      package_name = ""
+    name = package_name + ":Mock" + strip_extension(label_name)
+    return name
 
 """
 Use the helper scripts shipped with unity to
@@ -59,9 +62,11 @@ def __extract_sub_dir_from_header_path(single_header_path):
   if sub_dir.count("//") > 0:
     sub_dir = sub_dir.partition("//")[2]
   sub_dir = sub_dir.replace(":", "/").rsplit("/", maxsplit=1)[0]
-  if sub_dir.startswith("/"):
+  if sub_dir.startswith("//"):
+    sub_dir = sub_dir[2:]
+  elif sub_dir.startswith("/"):
     sub_dir = sub_dir[1:]
-  if not sub_dir.endswith("/"):
+  if not sub_dir.endswith("/") and sub_dir != "":
     sub_dir = sub_dir + "/"
   return sub_dir
 
@@ -110,9 +115,11 @@ def new_mock(name, srcs, basename=None, deps=[],
       basename = __get_hdr_base_name(srcs[0])
     plugin_argument = __build_plugins_argument(plugins)
     if plugin_argument.find("cexception") >= 0:
-      deps.append("@CException")
-    cmd = "UNITY_DIR=external/Unity/ ruby $(location @CMock//:MockGenerator) --mock_path=$(@D)/mocks/ --subdir=" \
-    + sub_dir + plugin_argument + other_arguments + " $(SRCS)"
+      deps = deps + ["@CException"]
+    cmd = "UNITY_DIR=external/Unity/ ruby $(location @CMock//:MockGenerator) --mock_path=$(@D)/mocks/"
+    if not sub_dir == '':
+      cmd = cmd + " --subdir=" + sub_dir
+    cmd = cmd + plugin_argument + other_arguments + " $(SRCS)"
     native.genrule(
         name = mock_srcs,
         srcs = srcs,
