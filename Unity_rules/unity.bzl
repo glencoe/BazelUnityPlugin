@@ -101,6 +101,7 @@ def new_mock(name, srcs, basename=None, deps=[],
              strippables=[],
              treat_as_void=[],
              verbosity=2,
+             copts=[],
              when_ptr="smart",
              fail_on_unexpected_calls=True):
     mock_srcs = name + "Srcs"
@@ -135,6 +136,7 @@ def new_mock(name, srcs, basename=None, deps=[],
         name = name,
         srcs = [mock_srcs],
         hdrs = [mock_srcs],
+        copts = copts,
         deps = [
             "@Unity//:Unity",
             "@CMock//:CMock",
