@@ -266,7 +266,6 @@ generate_mock_srcs = rule(
 )
 
 def mock(name, file, deps=[], visibility=None, copts=[], plugins=[], enforce_strict_ordering=False):
-  print(name)
   target_name = name.split(":")[-1]
   native.cc_library(
       name =  target_name + "OriginalHdrLib",
