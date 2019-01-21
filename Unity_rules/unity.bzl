@@ -68,6 +68,7 @@ def __extract_sub_dir_from_header_path(single_header_path):
 
 def __build_cmock_argument_string(enforce_strict_ordering, strippables, treat_as_void, verbosity, when_ptr, fail_on_unexpected_calls):
   other_arguments = ""
+  other_arguments += " --when_ptr=" + when_ptr
   if enforce_strict_ordering:
     other_arguments += " --enforce_strict_ordering=1"
   if strippables != []:
@@ -75,7 +76,6 @@ def __build_cmock_argument_string(enforce_strict_ordering, strippables, treat_as
   if treat_as_void != []:
     other_arguments += " --treat_as_void=" + ";".join(treat_as_void) + ";"
     other_arguments += " --verbosity={}".format(verbosity)
-    other_arguments += " --when_ptr=" + when_ptr
   if not fail_on_unexpected_calls:
     other_arguments += " --fail_on_unexpected_calls=0"
   return other_arguments
