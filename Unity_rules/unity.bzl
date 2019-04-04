@@ -89,7 +89,7 @@ def __build_plugins_argument(plugins):
 def __get_mock_hdr_base_name(path):
     return "Mock" + path.split("/")[-1].split(":")[-1][:-2]
 
-def new_mock(
+def mock(
         name,
         srcs,
         basename = None,
