@@ -136,7 +136,7 @@ def mock(
     )
     native.cc_library(
         name = name,
-        srcs = [mock_srcs] + srcs,
+        srcs = [mock_srcs],
         hdrs = [mock_srcs],
         copts = copts,
         includes = includes,
